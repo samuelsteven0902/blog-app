@@ -23,13 +23,13 @@ export default async function Home( { searchParams } : {
     return (
       <>
         <section className="pink_container">
-          <h1 className="heading">
-            Pitch your Startup, <br />
-            Connect With Entrepreneurs
+          <h1 className="heading ">
+          Share Your Thoughts,<br />
+          Connect with Bloggers 
           </h1>
           
           <p className="sub-heading !max-w-3xl">
-            Submit Ideas, Vote on Pitches, and Get Noticed in Virtual Competitions
+           Publish Your Blogs, Engage with Readers, and Build Your Audience
           </p>
 
           <SearchForm query={query} />
@@ -38,7 +38,7 @@ export default async function Home( { searchParams } : {
 
         <section className="section_container">
         <p className="text-30-semibold">
-          {query ? `Search results for "${query}"` : "All Startups"}
+          {query ? `Search results for "${query}"` : "All Blogs"}
         </p>
 
         <ul className="mt-7 card_grid">
@@ -47,7 +47,7 @@ export default async function Home( { searchParams } : {
               <StartupCard key={post?._id} post={post} />
             ))
           ) : (
-            <p className="no-results">No startups found</p>
+            <p className="no-results">No blog found</p>
           )}
         </ul>
       </section>
