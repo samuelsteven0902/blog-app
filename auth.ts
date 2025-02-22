@@ -40,11 +40,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       if (account?.provider === "google") {
+        console.log("Google sign-in attempt for email:", email);
+      
         const existingUser = await client
           .withConfig({ useCdn: false })
           .fetch(AUTHOR_BY_EMAIL_QUERY, { email });
-
+      
+        console.log("Existing User:", existingUser); // <-- Tambahkan ini
+      
         if (!existingUser) {
+          console.log("Creating new user in Sanity...");
           await writeClient.create({
             _type: "author",
             name,
@@ -52,7 +57,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             image,
           });
         }
-        userId = existingUser?._id || "";
       }
 
       return true;
