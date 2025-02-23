@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,  
   images: {
     dangerouslyAllowSVG: true,
-    domains: ["media.licdn.com", "avatars.githubusercontent.com"], // Pastikan GitHub Avatars disertakan
+    domains: ["media.licdn.com", "avatars.githubusercontent.com","lh3.googleusercontent.com"], // Pastikan GitHub Avatars disertakan
     remotePatterns: [
       {
         protocol: "https",

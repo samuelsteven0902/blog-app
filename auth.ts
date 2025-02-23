@@ -11,50 +11,60 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
-      allowDangerousEmailAccountLinking: true,
-      checks: ["none"],
-      
-    })
+    }),
   ],
   callbacks: {
-      async signIn({ user, account, profile }) {
-        console.log("🔹 signIn callback triggered");
-        console.log("User:", user);
-        console.log("Account:", account);
-        console.log("Profile:", profile);
-    
-        if (account?.provider === "google") {
-          console.log("✅ Google sign-in detected for:", user.email);
-    
-          const existingUser = await client
-            .withConfig({ useCdn: false })
-            .fetch(AUTHOR_BY_EMAIL_QUERY, { email: user.email });
-    
-          console.log("Existing User in DB:", existingUser);
-    
-          if (!existingUser) {
-            console.log("🆕 Creating new user in Sanity...");
-            await writeClient.create({
-              _type: "author",
-              name: user.name,
-              email: user.email,
-              image: user.image,
-            });
-          }
+    async signIn({ user, account, profile }) {
+      const { name, email, image } = user;
+      console.log("Sign-in callback triggered"); // ⬅️ Cek apakah callback berjalan
+      console.log("Account Provider:", account?.provider);
+      console.log("User Info:", user);
+      console.log("Profile Info:", profile);
+      let userId = "";
+
+      if (account?.provider === "github") {
+        const { id, login, bio } = profile as any;
+
+        const existingUser = await client
+          .withConfig({ useCdn: false })
+          .fetch(AUTHOR_BY_GITHUB_ID_QUERY, { id });
+
+        if (!existingUser) {
+          await writeClient.create({
+            _type: "author",
+            id,
+            name,
+            username: login,
+            email,
+            image,
+            bio: bio || "",
+          });
         }
-    
-        // Cek apakah login berhasil atau tidak
-        console.log("✅ Allowing sign-in...");
-        return true; // <-- Pastikan ini tidak `false`
-      },
-    
+        userId = id;
+      }
+
+      if (account?.provider === "google") {
+        console.log("Google sign-in attempt for email:", email);
+      
+        const existingUser = await client
+          .withConfig({ useCdn: false })
+          .fetch(AUTHOR_BY_EMAIL_QUERY, { email });
+      
+        console.log("Existing User:", existingUser); // <-- Tambahkan ini
+      
+        if (!existingUser) {
+          console.log("Creating new user in Sanity...");
+          await writeClient.create({
+            _type: "author",  
+            name,
+            email,
+            image,
+          });
+        }
+      }
+
+      return true;
+    },
     async jwt({ token, account, profile }) {
       if (account && profile) {
         let user;
