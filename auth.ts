@@ -16,12 +16,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user, account, profile }) {
       const { name, email, image } = user;
-      console.log("Sign-in callback triggered"); // ⬅️ Cek apakah callback berjalan
-      console.log("Account Provider:", account?.provider);
-      console.log("User Info:", user);
-      console.log("Profile Info:", profile);
       let userId = "";
-
       if (account?.provider === "github") {
         const { id, login, bio } = profile as any;
 
